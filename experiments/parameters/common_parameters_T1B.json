@@ -1,0 +1,15 @@
+{
+    "train_epochs": 1000,
+    "test_epochs": 1,
+    "lr_factor": 0.5,
+    "n_bags": [
+        5000,
+        300,
+        1
+    ],
+    "bag_size": 1000,
+    "patience": 40,
+    "verbose": 8,
+    "dataset_name": "lequaT1B",
+    "use_wandb": true
+}
