@@ -1,5 +1,5 @@
 {
-    "n_gmm_layers": 9,
+    "n_gm_layers": 9,
     "num_gaussians": [
         100,
         100,
