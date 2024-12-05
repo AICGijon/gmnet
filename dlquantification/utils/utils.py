@@ -34,7 +34,6 @@ class TestBagGenerator(BaseBagGenerator):
             )
         return samples_indexes, None
 
-
 class APPBagGenerator(BaseBagGenerator):
     """
     This is a bag generator following the APP protocol. It needs class information.
@@ -55,11 +54,15 @@ class APPBagGenerator(BaseBagGenerator):
             if not torch.is_tensor(y):
                 y = torch.IntTensor(y).to(self.device)
 
-            # Tensor to return the result. Each bag in a row.
+            # Tensor to store the result
             samples_indexes = torch.zeros((n_bags, bag_size), dtype=torch.int64, device=self.device)
             classes = torch.unique(y)
             n_classes = len(classes)
 
+            # Precompute class indices
+            class_indices = {cls.item(): torch.where(y == cls)[0] for cls in classes}
+
+            # Prevalences tensor
             prevalences = torch.zeros((n_bags, n_classes), device=self.device)
             for i in range(n_bags):
                 low = round(bag_size * 0.01)
@@ -70,16 +73,19 @@ class APPBagGenerator(BaseBagGenerator):
                 ps = torch.sort(ps)[0]
                 ps = ps[1:] - ps[:-1]  # Number of samples per class
                 prevalences[i, :] = ps / bag_size
-                already_generated = 0
+
+                # Fill the bag
+                bag_samples = []
                 for n, p in zip(classes, ps):
-                    if p != 0:
-                        examples_class = torch.where(y == n)[0]
-                        samples_indexes[i, already_generated : already_generated + p] = examples_class[
-                            torch.randint(len(examples_class), (p,), generator=self.gen, device=self.device)
-                        ]
-                        already_generated += p
-                suffle = torch.randperm(bag_size)
-                samples_indexes[i, :] = samples_indexes[i, suffle]
+                    if p > 0:
+                        indices = class_indices[n.item()]
+                        sampled_indices = indices[torch.randint(len(indices), (p,), generator=self.gen, device=self.device)]
+                        bag_samples.append(sampled_indices)
+
+                # Concatenate and shuffle
+                bag_samples = torch.cat(bag_samples)
+                suffle = torch.randperm(bag_size, generator=self.gen, device=self.device)
+                samples_indexes[i, :] = bag_samples[suffle]
             return samples_indexes, prevalences
 
 
