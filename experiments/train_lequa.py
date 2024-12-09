@@ -16,6 +16,7 @@ from dlquantification.utils.lossfunc import NMD
 import json
 import argparse
 from tqdm import tqdm
+import wandb
 
 
 def get_n_classes(dataset):
@@ -42,14 +43,15 @@ def standarize_tensors(tensors_standarize,ref_tensor,filename):
     return tensors_standarize
 
 
-def load_dataset_T2_T1B(path, train_name, n_samples, n_train_samples, n_val_samples, sample_size, n_features, include_labeled, standarize):
-    print("Loading training data...")
-    training_labeled = pd.read_csv(os.path.join(path, "training_data.txt"))
+def load_dataset_T2_T1B(path, train_name, n_samples,n_labeled_examples, n_train_samples, n_val_samples, sample_size, n_features, include_labeled, standarize):
+    if include_labeled:
+        print("Loading training data...")
+        training_labeled = pd.read_csv(os.path.join(path, "validation_training_data.csv"))
 
-    x_train = training_labeled.iloc[:, 1:].to_numpy()
-    y_train = training_labeled.iloc[:, 0].to_numpy()
-    x_train = torch.FloatTensor(x_train)
-    y_train = torch.LongTensor(y_train)
+        x_train = training_labeled.iloc[0:n_labeled_examples, 1:].to_numpy()
+        y_train = training_labeled.iloc[0:n_labeled_examples, 0].to_numpy()
+        x_train = torch.FloatTensor(x_train)
+        y_train = torch.LongTensor(y_train)
     print("Loading dev samples...")
     x_unlabeled_train = np.zeros((n_train_samples * sample_size, n_features)).astype(np.float32)
     x_unlabeled_val = np.zeros((n_val_samples * sample_size, n_features)).astype(np.float32)
@@ -164,35 +166,37 @@ def train_lequa(
     network_parameters,
     dataset,
     standarize,
+    n_labeled_examples,
+    app_bags_proportion=1,
     feature_extraction="rff",
     bag_generator="UnlabeledMixerBagGenerator",
     cuda_device="cuda:0",
 ):
+    app_bags_proportion=float(app_bags_proportion)
+    n_labeled_examples = int(n_labeled_examples)
+    n_train_samples = n_labeled_examples//1000
     n_classes = get_n_classes(dataset)
     if dataset == "T2":
-        path = "/media/nas/olayap/env_olaya/Doctorado/data/lequa2024/T2/public"
-        common_param_path = "parameters/common_parameters_T2.json"
-        n_train_samples = 700
-        n_val_samples = 300
+        path = "/media/nas/pgonzalez/lequa2024/T2/public"
+        common_param_path = "/media/nas/pgonzalez/gmnet/experiments/parameters/common_parameters_T2.json"
+        n_val_samples = 1000-n_train_samples
         n_samples = 1000
         sample_size = 1000
         n_features = 256
         real_bags_proportion = 0.5 
-        n_labeled_examples = 20000
         loss = MRAE(eps=1.0 / (2 * sample_size), n_classes=n_classes)
     elif dataset == "T1B":
-        path = "/media/nas/olayap/env_olaya/Doctorado/data/leQua2022/T1B/public"
-        common_param_path = "parameters/common_parameters_T1B.json"
-        n_train_samples = 700
-        n_val_samples = 300
+        path = "/media/nas/pgonzalez/lequa/T1B/public"
+        common_param_path = "/media/nas/pgonzalez/gmnet/experiments/parameters/common_parameters_T1B.json"
+        n_train_samples = 0
+        n_val_samples = 1000
         n_samples = 1000
         sample_size = 1000
         n_features = 300
         real_bags_proportion = 0.5
-        n_labeled_examples = 20000
         loss = MRAE(eps=1.0 / (2 * sample_size), n_classes=n_classes)
     elif dataset == "T3":
-        path = "/media/nas/olayap/env_olaya/Doctorado/data/lequa2024/T3/public"
+        path = "/media/nas/pgonzalez/lequa2024/T3/public"
         common_param_path = "parameters/common_parameters_T3.json"
         n_train_samples = 770 
         n_val_samples = 330 
@@ -200,14 +204,13 @@ def train_lequa(
         sample_size = 200
         n_features = 256
         real_bags_proportion = 0.5 
-        n_labeled_examples = 20000
         loss = loss_val = NMD()
 
     seed = 2032
     if dataset == "T2" or dataset == "T1B":
         include_labeled = bag_generator == "LeQuaBagGenerator"
         dataset_train, train_prevalences, dataset_val, val_prevalences = load_dataset_T2_T1B(
-            path, train_name, n_samples, n_train_samples, n_val_samples, sample_size, n_features, include_labeled, standarize
+            path, train_name, n_samples,n_labeled_examples, n_train_samples, n_val_samples, sample_size, n_features, include_labeled, standarize
         )
     elif dataset == "T3":
         include_labeled = bag_generator == "LeQuaBagGenerator"
@@ -230,7 +233,7 @@ def train_lequa(
             seed=seed,
             prevalences=train_prevalences,
             sample_size=sample_size,
-            app_bags_proportion=0.5, 
+            app_bags_proportion=app_bags_proportion, 
             mixed_bags_proportion=1 - real_bags_proportion,
             labeled_unlabeled_split=(
                 range(0, n_labeled_examples),
@@ -279,6 +282,7 @@ def train_lequa(
     parameters["use_wandb"] = True
     parameters["use_multiple_devices"] = False
     parameters["num_workers"] = 8
+    parameters["n_bags"] = [5000, n_val_samples, 1]
     print("Network parameteres: ", parameters)
 
     if network == "histnet":
@@ -293,6 +297,7 @@ def train_lequa(
         raise ValueError("network has not a proper value")
 
     model.fit(dataset=dataset_train, val_dataset=dataset_val)
+    wandb.log({"n_labeled_examples":n_labeled_examples})
     return model
 
 def test_lequa(model, train_name, dataset, standarize):
@@ -300,15 +305,15 @@ def test_lequa(model, train_name, dataset, standarize):
     n_test_bags = 5000
     if dataset=='T2':
         bag_size = 1000
-        path = "/media/nas/olayap/env_olaya/Doctorado/data/lequa2024/"
+        path = "/media/nas/pgonzalez/lequa2024/"
         input_size=256
     elif dataset=='T1B':
-        path = "/media/nas/olayap/env_olaya/Doctorado/data/leQua2022/"
+        path = "/media/nas/pgonzalez/lequa/"
         input_size=300
         bag_size = 1000
     elif dataset=='T3':
         bag_size = 200
-        path = "/media/nas/olayap/env_olaya/Doctorado/data/lequa2024/"
+        path = "/media/nas/pgonzalez/lequa2024/"
         input_size=256
     
     n_classes = get_n_classes(dataset)
@@ -355,6 +360,8 @@ def test_lequa(model, train_name, dataset, standarize):
     results.to_csv(os.path.join("results/", train_name + ".txt"), index_label="id")
     results_errors.to_csv(os.path.join("results/", train_name + "_errors.txt"), index_label="id")
     print(results_errors.describe())
+    rae_mean = results_errors.describe().loc['mean', 'RAE']
+    wandb.log({"test_error":rae_mean})
 
 
 if __name__ == "__main__":
@@ -369,6 +376,8 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--bag_generator", help="Bag generator to use")
     parser.add_argument("-s", "--standarize", help="Standarize input data", action='store_true')
     parser.add_argument("-d", "--dataset", help="Dataset to use: T1B, T2, T3", required=True)
+    parser.add_argument("-l", "--n_labeled_examples",required=False)
+    parser.add_argument("-a", "--app_bags_proportion",required=False)
     parser.add_argument("-c", "--cuda_device", help="Device cuda:0 or cuda:1", required=True)
     print("Using following arguments:")
     args = vars(parser.parse_args())
