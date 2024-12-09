@@ -1,6 +1,6 @@
 {
     "start_lr": 0.0005,
-    "end_lr": 0.00001,
+    "end_lr": 0.0001,
     "linear_sizes": [
         4096
     ],

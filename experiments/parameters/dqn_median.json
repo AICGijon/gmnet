@@ -13,5 +13,5 @@
     "gradient_accumulation": 20,
     "weight_decay": 0.001,
     "start_lr": 0.0005,
-    "end_lr": 0.00001
+    "end_lr": 0.0001
 }
