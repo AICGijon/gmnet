@@ -17,3 +17,4 @@ wandb
 *.gif
 *.pytest_cache
 *.pth
+*.pdf
