@@ -1,0 +1,9 @@
+python train_lequa.py -t histnet_app_u_20000 -n histnet -f rff -p /media/nas/pgonzalez/gmnet/experiments/parameters/histnet.json -b LeQuaBagGenerator -s -d T2 -l 20000 -a 0.5 -c cuda:1
+python train_lequa.py -t histnet_app_u_40000 -n histnet -f rff -p /media/nas/pgonzalez/gmnet/experiments/parameters/histnet.json -b LeQuaBagGenerator -s -d T2 -l 40000 -a 0.5 -c cuda:1
+python train_lequa.py -t histnet_app_u_60000 -n histnet -f rff -p /media/nas/pgonzalez/gmnet/experiments/parameters/histnet.json -b LeQuaBagGenerator -s -d T2 -l 60000 -a 0.5 -c cuda:1
+python train_lequa.py -t histnet_app_u_80000 -n histnet -f rff -p /media/nas/pgonzalez/gmnet/experiments/parameters/histnet.json -b LeQuaBagGenerator -s -d T2 -l 80000 -a 0.5 -c cuda:1
+python train_lequa.py -t histnet_app_u_100000 -n histnet -f rff -p /media/nas/pgonzalez/gmnet/experiments/parameters/histnet.json -b LeQuaBagGenerator -s -d T2 -l 100000 -a 0.5 -c cuda:1
+python train_lequa.py -t histnet_app_u_200000 -n histnet -f rff -p /media/nas/pgonzalez/gmnet/experiments/parameters/histnet.json -b LeQuaBagGenerator -s -d T2 -l 200000 -a 0.5 -c cuda:1
+python train_lequa.py -t histnet_app_u_300000 -n histnet -f rff -p /media/nas/pgonzalez/gmnet/experiments/parameters/histnet.json -b LeQuaBagGenerator -s -d T2 -l 300000 -a 0.5 -c cuda:1
+python train_lequa.py -t histnet_app_u_500000 -n histnet -f rff -p /media/nas/pgonzalez/gmnet/experiments/parameters/histnet.json -b LeQuaBagGenerator -s -d T2 -l 500000 -a 0.5 -c cuda:1
+python train_lequa.py -t histnet_app_u_700000 -n histnet -f rff -p /media/nas/pgonzalez/gmnet/experiments/parameters/histnet.json -b LeQuaBagGenerator -s -d T2 -l 700000 -a 0.5 -c cuda:1
