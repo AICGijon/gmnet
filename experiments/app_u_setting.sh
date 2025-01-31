@@ -1,9 +1,0 @@
-python train_lequa.py -t gmnet_app_u_20000 -n gmnet -f nofe -p /media/nas/pgonzalez/gmnet/experiments/parameters/gmnet.json -b LeQuaBagGenerator -s -d T2 -l 20000 -a 0.5 -c cuda:0
-python train_lequa.py -t gmnet_app_u_40000 -n gmnet -f nofe -p /media/nas/pgonzalez/gmnet/experiments/parameters/gmnet.json -b LeQuaBagGenerator -s -d T2 -l 40000 -a 0.5 -c cuda:0
-python train_lequa.py -t gmnet_app_u_60000 -n gmnet -f nofe -p /media/nas/pgonzalez/gmnet/experiments/parameters/gmnet.json -b LeQuaBagGenerator -s -d T2 -l 60000 -a 0.5 -c cuda:0
-python train_lequa.py -t gmnet_app_u_80000 -n gmnet -f nofe -p /media/nas/pgonzalez/gmnet/experiments/parameters/gmnet.json -b LeQuaBagGenerator -s -d T2 -l 80000 -a 0.5 -c cuda:0
-python train_lequa.py -t gmnet_app_u_100000 -n gmnet -f nofe -p /media/nas/pgonzalez/gmnet/experiments/parameters/gmnet.json -b LeQuaBagGenerator -s -d T2 -l 100000 -a 0.5 -c cuda:0
-python train_lequa.py -t gmnet_app_u_200000 -n gmnet -f nofe -p /media/nas/pgonzalez/gmnet/experiments/parameters/gmnet.json -b LeQuaBagGenerator -s -d T2 -l 200000 -a 0.5 -c cuda:0
-python train_lequa.py -t gmnet_app_u_300000 -n gmnet -f nofe -p /media/nas/pgonzalez/gmnet/experiments/parameters/gmnet.json -b LeQuaBagGenerator -s -d T2 -l 300000 -a 0.5 -c cuda:0
-python train_lequa.py -t gmnet_app_u_500000 -n gmnet -f nofe -p /media/nas/pgonzalez/gmnet/experiments/parameters/gmnet.json -b LeQuaBagGenerator -s -d T2 -l 500000 -a 0.5 -c cuda:0
-python train_lequa.py -t gmnet_app_u_700000 -n gmnet -f nofe -p /media/nas/pgonzalez/gmnet/experiments/parameters/gmnet.json -b LeQuaBagGenerator -s -d T2 -l 700000 -a 0.5 -c cuda:0
