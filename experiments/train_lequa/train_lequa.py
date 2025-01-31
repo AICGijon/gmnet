@@ -159,6 +159,8 @@ def load_dataset_T3(path, train_name, n_samples, n_train_samples, n_val_samples,
 
 
 def train_lequa(
+    data_path,
+    parameters_path,
     train_name,
     network,
     network_parameters,
@@ -170,8 +172,8 @@ def train_lequa(
 ):
     n_classes = get_n_classes(dataset)
     if dataset == "T2":
-        path = "data/lequa2024/T2/public"
-        common_param_path = "./parameters/common_parameters_T2.json"
+        path = os.path.join(data_path, "lequa2024/T2/public")
+        common_param_path = os.path.join(parameters_path, "common_parameters_T2.json")
         n_train_samples = 700
         n_val_samples = 300
         n_samples = 1000
@@ -181,8 +183,8 @@ def train_lequa(
         n_labeled_examples = 20000
         loss = MRAE(eps=1.0 / (2 * sample_size), n_classes=n_classes)
     elif dataset == "T1B":
-        path = "data/leQua2022/T1B/public"
-        common_param_path = "./parameters/common_parameters_T1B.json"
+        path = os.path.join(data_path, "leQua2022/T1B/public")
+        common_param_path = os.path.join(parameters_path, "common_parameters_T1B.json")
         n_train_samples = 700
         n_val_samples = 300
         n_samples = 1000
@@ -192,8 +194,8 @@ def train_lequa(
         n_labeled_examples = 20000
         loss = MRAE(eps=1.0 / (2 * sample_size), n_classes=n_classes)
     elif dataset == "T3":
-        path = "data/lequa2024/T3/public"
-        common_param_path = "./parameters/common_parameters_T3.json"
+        path = os.path.join(data_path, "lequa2024/T3/public")
+        common_param_path = os.path.join(parameters_path, "common_parameters_T3.json")
         n_train_samples = 770 
         n_val_samples = 330 
         n_samples = 1100
@@ -295,20 +297,20 @@ def train_lequa(
     model.fit(dataset=dataset_train, val_dataset=dataset_val)
     return model
 
-def test_lequa(model, train_name, dataset, standarize):
+def test_lequa(model, data_path, train_name, dataset, standarize):
     print("Testing the model...")
     n_test_bags = 5000
     if dataset=='T2':
         bag_size = 1000
-        path = "data/lequa2024/"
+        path = os.path.join(data_path, "lequa2024/")
         input_size=256
     elif dataset=='T1B':
-        path = "data/leQua2022/"
+        path = os.path.join(data_path, "leQua2022/")
         input_size=300
         bag_size = 1000
     elif dataset=='T3':
         bag_size = 200
-        path = "data/lequa2024/"
+        path = os.path.join(data_path, "lequa2024/")
         input_size=256
     
     n_classes = get_n_classes(dataset)
@@ -376,5 +378,9 @@ if __name__ == "__main__":
 
     args["cuda_device"] = torch.device(args["cuda_device"])
 
-    model = train_lequa(**args)
-    test_lequa(model,args["train_name"],args["dataset"],args["standarize"])
+    ## MODIFY THESE 2 PATHS
+    data_path = "data/" #data directory
+    parameters_path = "gmnet/experiments/parameters" #parameters directory
+    
+    model = train_lequa(data_path, parameters_path, **args)
+    test_lequa(model,data_path,args["train_name"],args["dataset"],args["standarize"])
