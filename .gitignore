@@ -18,3 +18,9 @@ wandb
 *.pytest_cache
 *.pth
 *.pdf
+other_datasets
+cifar10_testbags
+cifar10_test.csv
+cifar10_train.csv
+data
+latex
