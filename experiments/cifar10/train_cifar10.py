@@ -56,6 +56,8 @@ def train_model(train_name, dataset_name, network, network_parameters_path, feat
 
     if dataset_name == "cifar10":
         common_param_path = os.path.join("../parameters/common_parameters_cifar10.json")
+    elif dataset_name == "cifar100coarse":
+        common_param_path = os.path.join("../parameters/common_parameters_cifar100coarse.json")
     else:
         raise ValueError(f"Dataset '{dataset_name}' not supported.")
 
@@ -103,7 +105,7 @@ def train_model(train_name, dataset_name, network, network_parameters_path, feat
         raise ValueError("Invalid network name")
 
     print("Training model...")
-    #model.fit(dataset=train_dataset, val_dataset=val_dataset)
+    model.fit(dataset=train_dataset, val_dataset=val_dataset)
     return model, x_train.shape[1], n_classes
 
 
