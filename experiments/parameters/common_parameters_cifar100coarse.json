@@ -1,0 +1,16 @@
+{
+    "n_classes": 20,
+    "train_epochs": 1000,
+    "test_epochs": 1,
+    "lr_factor": 0.5,
+    "n_bags": [
+        5000,
+        500,
+        1
+    ],
+    "bag_size": 500,
+    "patience": 40,
+    "verbose": 8,
+    "dataset_name": "cifar100coarse",
+    "use_wandb": true
+}
