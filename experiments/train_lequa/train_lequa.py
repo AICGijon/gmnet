@@ -379,8 +379,8 @@ if __name__ == "__main__":
     args["cuda_device"] = torch.device(args["cuda_device"])
 
     ## MODIFY THESE 2 PATHS
-    data_path = "data/" #data directory
-    parameters_path = "gmnet/experiments/parameters" #parameters directory
+    data_path = "/media/nas/pgonzalez/" #data directory
+    parameters_path = "../parameters" #parameters directory
     
     model = train_lequa(data_path, parameters_path, **args)
     test_lequa(model,data_path,args["train_name"],args["dataset"],args["standarize"])
