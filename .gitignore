@@ -22,5 +22,8 @@ other_datasets
 cifar10_testbags
 cifar10_test.csv
 cifar10_train.csv
+cifar100coarse_train.csv
+cifar100coarse_test.csv
+cifar100coarse_testbags
 data
 latex
