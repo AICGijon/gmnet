@@ -5,13 +5,16 @@ import torch
 print("Computing errors...")
 
 methods = ['CC','PCC','ACC','PACC','DMy','EMQ','EMQ-Platt']
-datasets = ['cifar10']
+datasets = ['cifar10','cifar100coarse']
 
 n_test_bags = 1000
 
 for dataset in datasets:
     sample_size = 500
-    n_classes = 10
+    if dataset=='cifar10':
+        n_classes = 10
+    elif dataset=='cifar100coarse':
+        n_classes = 20
     test_prevalences = pd.read_csv(f"{dataset}_testbags/prevalences.csv", index_col=0).values
     for method in methods:
         path = f"results_traditional/{method}_{dataset}/task_{dataset}.csv"
